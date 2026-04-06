@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en" x-data="appState()" :class="{ 'dark': darkMode }" :dir="isRtl ? 'rtl' : 'ltr'">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23008080' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z'/></svg>">
+    <title>ElderCare | Compassionate In-Home Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0D9488', // Teal-600
+                        secondary: '#F59E0B', // Amber-500
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-all">
+<nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm" 
+     x-data="{ 
+        mobileMenu: false, 
+        userDropdown: false,
+        darkMode: localStorage.getItem('darkMode') === 'true',
+        isRtl: localStorage.getItem('isRtl') === 'true',
+        
+        isActive(path) {
+            const current = window.location.pathname;
+            return current.endsWith(path) || (path === 'index.html' && (current === '/' || current === ''));
+        },
+
+        toggleDarkMode() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('darkMode', this.darkMode);
+            if (this.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        },
+
+        toggleRtl() {
+            this.isRtl = !this.isRtl;
+            localStorage.setItem('isRtl', this.isRtl);
+            document.documentElement.dir = this.isRtl ? 'rtl' : 'ltr';
+        },
+
+        init() {
+            if (this.darkMode) document.documentElement.classList.add('dark');
+            document.documentElement.dir = this.isRtl ? 'rtl' : 'ltr';
+            lucide.createIcons();
+        }
+     }">
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20 items-center">
+            
+            <a href="index.html" class="flex-shrink-0 flex items-center gap-2">
+                <div class="bg-primary p-2 rounded-lg text-white">
+                    <i data-lucide="heart" class="w-5 h-5 md:w-6 md:h-6"></i>
+                </div>
+                <span class="text-xl md:text-2xl font-bold tracking-tight text-primary dark:text-teal-400">ElderCare</span>
+            </a>
+
+            <div class="hidden lg:flex items-center lg:space-x-4 xl:space-x-8">
+                <a href="index.html" class="text-sm xl:text-base font-medium transition-colors hover:text-primary" :class="isActive('index.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">Home</a>
+                <a href="home2.html" class="text-sm xl:text-base font-medium transition-colors hover:text-primary" :class="isActive('home2.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">Home 2</a>
+                <a href="about.html" class="text-sm xl:text-base font-medium transition-colors hover:text-primary" :class="isActive('about.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">About</a>
+                <a href="service.html" class="text-sm xl:text-base font-medium transition-colors hover:text-primary" :class="isActive('service.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">Service</a>
+                <a href="contact.html" class="text-sm xl:text-base font-medium transition-colors hover:text-primary" :class="isActive('contact.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">Contact</a>
+
+                <div class="relative" @mouseenter="userDropdown = true" @mouseleave="userDropdown = false">
+                    <button class="flex items-center gap-1 text-sm xl:text-base font-medium transition-colors hover:text-primary py-4" :class="isActive('user.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">
+                        Dashboard <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                    <div x-show="userDropdown" x-cloak 
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         class="absolute left-0 mt-0 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50">
+                        <a href="user.html" class="block px-4 py-2 text-sm font-medium hover:bg-primary/10 hover:text-primary text-gray-700 dark:text-gray-200">User Profile</a>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex items-center space-x-2 xl:space-x-4">
+                <button @click="toggleRtl()" class="p-2 w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 text-[9px] font-black transition-transform active:scale-90" x-text="isRtl ? 'LTR' : 'RTL'"></button>
+                
+                <button @click="toggleDarkMode()" class="p-2 w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 transition-all active:scale-90">
+                    <i x-show="!darkMode" data-lucide="moon" class="w-4 h-4 xl:w-5 xl:h-5"></i>
+                    <i x-show="darkMode" data-lucide="sun" class="w-4 h-4 xl:w-5 xl:h-5 text-amber-400"></i>
+                </button>
+
+                <div class="hidden xl:block h-8 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2"></div>
+
+                <a href="login.html" 
+                   class="relative inline-flex items-center justify-center px-4 xl:px-6 py-2 xl:py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs xl:text-sm rounded-full transition-all duration-300 hover:bg-primary hover:text-white">
+                    <i data-lucide="user" class="w-3 h-3 xl:w-4 xl:h-4 mr-2"></i>
+                    Login
+                </a>
+
+                <a href="booknow.html" class="bg-primary text-white px-4 xl:px-6 py-2 xl:py-2.5 rounded-full font-bold hover:bg-teal-700 shadow-lg shadow-teal-200/50 dark:shadow-none text-xs xl:text-sm whitespace-nowrap transition-all active:scale-95">
+                    Book Now
+                </a>
+            </div>
+
+            <div class="lg:hidden flex items-center gap-2">
+                <button @click="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700">
+                    <i data-lucide="sun" class="w-5 h-5 text-amber-400" x-show="darkMode"></i>
+                    <i data-lucide="moon" class="w-5 h-5" x-show="!darkMode"></i>
+                </button>
+                <button @click="mobileMenu = !mobileMenu" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700">
+                    <i data-lucide="menu" x-show="!mobileMenu"></i>
+                    <i data-lucide="x" x-show="mobileMenu"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="mobileMenu" x-cloak 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-4"
+         class="lg:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 px-4 py-6 space-y-2 shadow-2xl overflow-y-auto max-h-[80vh]">
+        
+        <a href="index.html" class="block py-3 px-4 rounded-xl font-bold" :class="isActive('index.html') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300'">Home</a>
+        <a href="home2.html" class="block py-3 px-4 rounded-xl font-bold" :class="isActive('home2.html') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300'">Home 2</a>
+        <a href="about.html" class="block py-3 px-4 rounded-xl font-bold" :class="isActive('about.html') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300'">About</a>
+        <a href="service.html" class="block py-3 px-4 rounded-xl font-bold" :class="isActive('service.html') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300'">Service</a>
+        <a href="contact.html" class="block py-3 px-4 rounded-xl font-bold" :class="isActive('contact.html') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300'">Contact</a>
+        <a href="user.html" class="block py-3 px-4 rounded-xl font-bold" :class="isActive('user.html') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300'">User Dashboard</a>
+
+        <div class="grid grid-cols-2 gap-3 pt-6 border-t dark:border-gray-700">
+            <button @click="toggleRtl()" class="py-3 rounded-xl bg-gray-100 dark:bg-gray-700 font-bold text-xs" x-text="isRtl ? 'Set LTR' : 'Set RTL'"></button>
+            <a href="login.html" class="py-3 border-2 border-primary text-primary text-center rounded-xl font-bold text-xs">Login</a>
+        </div>
+        <a href="booknow.html" class="block w-full py-4 bg-primary text-white text-center rounded-xl font-bold text-sm shadow-lg shadow-teal-200/50 mt-2">Book Care Now</a>
+    </div>
+</nav>
+ <!-- <nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm" 
+     x-data="{ 
+        mobileMenu: false, 
+        userDropdown: false,
+        darkMode: localStorage.getItem('darkMode') === 'true',
+        isRtl: localStorage.getItem('isRtl') === 'true',
+        
+        // Helper to check if a link is active
+        isActive(path) {
+            const current = window.location.pathname;
+            return current.endsWith(path) || (path === 'index.html' && (current === '/' || current === ''));
+        },
+
+        toggleDarkMode() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('darkMode', this.darkMode);
+        },
+
+        toggleRtl() {
+            this.isRtl = !this.isRtl;
+            localStorage.setItem('isRtl', this.isRtl);
+        },
+
+        init() {
+            // This runs once when the nav loads
+            lucide.createIcons();
+        }
+     }">
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20 items-center">
+            
+            <a href="index.html" class="flex-shrink-0 flex items-center gap-2">
+                <div class="bg-primary p-2 rounded-lg text-white">
+                    <i data-lucide="heart"></i>
+                </div>
+                <span class="text-2xl font-bold tracking-tight text-primary dark:text-teal-400">ElderCare</span>
+            </a>
+
+            <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
+                <a href="index.html" 
+                   class="font-medium transition-colors hover:text-primary"
+                   :class="isActive('index.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">
+                    Home
+                </a>
+                <a href="home2.html" 
+                   class="font-medium transition-colors hover:text-primary"
+                   :class="isActive('home2.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">
+                    Home 2
+                </a>
+                <a href="about.html" 
+                   class="font-medium transition-colors hover:text-primary"
+                   :class="isActive('about.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">
+                    About
+                </a>
+                <a href="service.html" 
+                   class="font-medium transition-colors hover:text-primary"
+                   :class="isActive('service.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">
+                    Service
+                </a>
+                <a href="contact.html" 
+                   class="font-medium transition-colors hover:text-primary"
+                   :class="isActive('contact.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">
+                    Contact
+                </a>
+                
+                <div class="relative">
+                    <button @click="userDropdown = !userDropdown" @click.away="userDropdown = false" 
+                            class="flex items-center gap-1 font-medium uppercase text-sm tracking-wider transition-colors hover:text-primary"
+                            :class="isActive('user.html') ? 'text-primary' : 'text-gray-600 dark:text-gray-300'">
+                        Dashboard <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                    <div x-show="userDropdown" x-cloak 
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-xl shadow-xl border border-gray-100 dark:border-gray-600 py-2">
+                        <a href="user.html" 
+                           class="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-600"
+                           :class="isActive('user.html') ? 'bg-teal-50 dark:bg-teal-900/20 text-primary font-bold' : ''">
+                            Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex items-center space-x-3 xl:space-x-4">
+                <button @click="toggleRtl()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-xs font-bold transition-all" x-text="isRtl ? 'LTR' : 'RTL'"></button>
+                
+                <button @click="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
+                    <i x-show="!darkMode" data-lucide="moon" class="w-5 h-5"></i>
+                    <i x-show="darkMode" data-lucide="sun" class="w-5 h-5"></i>
+                </button>
+
+                <a href="login.html" class="bg-primary text-white px-5 py-2.5 rounded-full font-bold hover:bg-teal-700 transition-all shadow-md shadow-teal-200/50 dark:shadow-none text-sm whitespace-nowrap">Login</a>
+                <a href="booknow.html" class="bg-primary text-white px-5 py-2.5 rounded-full font-bold hover:bg-teal-700 transition-all shadow-md shadow-teal-200/50 dark:shadow-none text-sm whitespace-nowrap">Book Now</a>
+            </div>
+
+            <div class="lg:hidden flex items-center gap-2">
+                <button @click="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i data-lucide="sun" class="w-5 h-5" x-show="darkMode"></i>
+                    <i data-lucide="moon" class="w-5 h-5" x-show="!darkMode"></i>
+                </button>
+                <button @click="mobileMenu = !mobileMenu" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i data-lucide="menu" x-show="!mobileMenu"></i>
+                   
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="mobileMenu" 
+         x-cloak 
+         @click.away="mobileMenu = false"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         class="lg:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 px-4 pt-2 pb-6 space-y-1 shadow-xl">
+        
+        <a href="index.html" class="block py-3 px-4 rounded-lg font-medium hover:bg-teal-50 dark:hover:bg-teal-900/20" :class="isActive('index.html') ? 'bg-teal-50 text-primary' : ''">Home</a>
+        <a href="home2.html" class="block py-3 px-4 rounded-lg font-medium hover:bg-teal-50 dark:hover:bg-teal-900/20" :class="isActive('home2.html') ? 'bg-teal-50 text-primary' : ''">Home 2</a>
+        <a href="about.html" class="block py-3 px-4 rounded-lg font-medium hover:bg-teal-50 dark:hover:bg-teal-900/20" :class="isActive('about.html') ? 'bg-teal-50 text-primary' : ''">About</a>
+        <a href="service.html" class="block py-3 px-4 rounded-lg font-medium hover:bg-teal-50 dark:hover:bg-teal-900/20" :class="isActive('service.html') ? 'bg-teal-50 text-primary' : ''">Service</a>
+        <a href="contact.html" class="block py-3 px-4 rounded-lg font-medium hover:bg-teal-50 dark:hover:bg-teal-900/20" :class="isActive('contact.html') ? 'bg-teal-50 text-primary' : ''">Contact</a>
+        <a href="user.html" class="block py-3 px-4 rounded-lg font-medium border-b dark:border-gray-700 mb-2" :class="isActive('user.html') ? 'text-primary' : ''">User Dashboard</a>
+        
+        <div class="grid grid-cols-2 gap-3 mt-4">
+            <a href="login.html" class="w-full text-center py-3 border-2 border-primary text-primary rounded-xl font-bold">Login</a>
+            <a href="booknow.html" class="w-full text-center py-3 bg-primary text-white rounded-xl font-bold">Book Now</a>
+        </div>
+        <button @click="toggleRtl()" class="w-full mt-4 py-2 text-sm text-gray-500 font-bold" x-text="isRtl ? 'Switch to LTR' : 'Switch to RTL'"></button>
+    </div>
+</nav> -->
+
+   <section class="relative min-h-[80vh] flex items-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+        <img src="assets/indexhero" 
+             class="w-full h-full object-cover opacity-100 dark:opacity-40" 
+             alt="Elderly Care">
+        
+        <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent dark:from-gray-900 dark:via-gray-900/60 dark:to-transparent"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-20">
+        <div class="max-w-2xl">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-sm mb-6 uppercase tracking-widest backdrop-blur-sm">
+                Premium Caregiving
+            </span>
+            <h1 class="text-4xl md:text-5xl lg:text-7xl font-extrabold leading-tight mb-6 text-gray-900 dark:text-white">
+                Compassionate Care for Your <span class="text-primary">Loved Ones</span> at Home
+            </h1>
+            <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-10 leading-relaxed font-medium">
+                Professional caregivers providing comfort, dignity, and independence. We treat your family like our own.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+               <a href="contact.html">
+
+                <button class="bg-primary text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-700 flex items-center justify-center gap-2 shadow-xl shadow-teal-200/50 dark:shadow-none transition-all group">
+                    Book a Free Consultation
+                    <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+                </a>
+                <button class="bg-white/80 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 px-8 py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:border-primary transition-all backdrop-blur-sm">
+                    <i data-lucide="phone-call" class="w-5 h-5 text-primary"></i>
+                    Call Now – 24/7 Support
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="py-20 bg-white dark:bg-gray-900 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
+                Why Families Trust <span class="text-primary">ElderCare</span>
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400">
+                We go above and beyond to ensure your loved ones receive the highest standard of professional and compassionate care.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            <div class="group p-8 bg-slate-50 dark:bg-gray-800 rounded-3xl border border-transparent hover:border-primary/30 hover:bg-white dark:hover:bg-gray-700 transition-all duration-300 transform hover:-translate-y-2 shadow-sm hover:shadow-xl">
+                <div class="flex flex-col items-center text-center">
+                    <div class="mb-5 flex text-amber-500">
+                        <i data-lucide="star" class="fill-current w-5 h-5"></i>
+                        <i data-lucide="star" class="fill-current w-5 h-5"></i>
+                        <i data-lucide="star" class="fill-current w-5 h-5"></i>
+                        <i data-lucide="star" class="fill-current w-5 h-5"></i>
+                        <i data-lucide="star" class="fill-current w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">5-Star Rated</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                        Trusted by over 500+ local families for consistent excellence.
+                    </p>
+                </div>
+            </div>
+
+            <div class="group p-8 bg-slate-50 dark:bg-gray-800 rounded-3xl border border-transparent hover:border-primary/30 hover:bg-white dark:hover:bg-gray-700 transition-all duration-300 transform hover:-translate-y-2 shadow-sm hover:shadow-xl">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-14 h-14 bg-teal-100 dark:bg-teal-900/30 text-primary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="shield-check" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">Certified Experts</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                        100% Background-verified & medically certified caregivers.
+                    </p>
+                </div>
+            </div>
+
+            <div class="group p-8 bg-slate-50 dark:bg-gray-800 rounded-3xl border border-transparent hover:border-primary/30 hover:bg-white dark:hover:bg-gray-700 transition-all duration-300 transform hover:-translate-y-2 shadow-sm hover:shadow-xl">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="clock" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">24/7 Support</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                        Round-the-clock care and immediate  your peace of mind.
+                    </p>
+                </div>
+            </div>
+
+            <div class="group p-8 bg-slate-50 dark:bg-gray-800 rounded-3xl border border-transparent hover:border-primary/30 hover:bg-white dark:hover:bg-gray-700 transition-all duration-300 transform hover:-translate-y-2 shadow-sm hover:shadow-xl">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-14 h-14 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="heart-pulse" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">Emergency Ready</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                        Advanced safety protocols and emergency medical coordination.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="py-20 bg-slate-50 dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div class="max-w-2xl">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
+                    Our Dedicated <span class="text-primary">Care Services</span>
+                </h2>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Comprehensive in-home support tailored to the unique needs of your loved ones, ensuring safety and comfort.
+                </p>
+            </div>
+            <a href="service.html" class="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 text-primary font-bold rounded-full border-2 border-primary/20 hover:border-primary transition-all shadow-sm">
+                View All Services
+                <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <div class="group relative overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-500">
+                <div class="aspect-video overflow-hidden">
+                    <img src="assets/elderlycare" 
+                         alt="Personal Care" 
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 bg-teal-100 dark:bg-teal-900/30 text-primary rounded-2xl">
+                            <i data-lucide="user-plus" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">Personal Care Assistance</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">Help with daily activities like bathing, dressing, and grooming with maximum dignity.</p>
+                    <a href="booknow.html" class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-500">
+                <div class="aspect-video overflow-hidden">
+                    <img src="assets/Companionship" 
+                         alt="Companionship" 
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl">
+                            <i data-lucide="users" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">Companionship Services</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">Engaging conversation, social outings, and emotional support to prevent loneliness.</p>
+                    <a href="booknow.html" class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-500">
+                <div class="aspect-video overflow-hidden">
+                    <img src="assets/Medication Reminders" 
+                         alt="Medication" 
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-2xl">
+                            <i data-lucide="pill" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">Medication Reminders</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">Ensuring prescriptions are taken correctly and on time for optimal health.</p>
+                    <a href="booknow.html" class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-500">
+                <div class="aspect-video overflow-hidden">
+                    <img src="assets/Meal Prep" 
+                         alt="Meal Prep" 
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl">
+                            <i data-lucide="utensils" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">Meal Preparation</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">Nutritious, home-cooked meals prepared according to dietary requirements.</p>
+                    <a href="booknow.html" class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-500">
+                <div class="aspect-video overflow-hidden">
+                    <img src="assets/Mobility" 
+                         alt="Mobility" 
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-2xl">
+                            <i data-lucide="car" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">Mobility & Transport</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">Safe transportation to appointments, grocery shopping, and social events.</p>
+                    <a href="booknow.html" class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-500">
+                <div class="aspect-video overflow-hidden">
+                    <img src="assets/Post Hospital" 
+                         alt="Post Hospital" 
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 bg-orange-100 dark:bg-orange-900/30 text-orange-600 rounded-2xl">
+                            <i data-lucide="hospital" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 dark:text-white">Post-Hospital Care</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">Specialized recovery support at home after a hospital stay or surgery.</p>
+                    <a href="#" class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<section class="py-24 bg-white dark:bg-gray-950 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        
+        <div class="absolute inset-0 z-0 opacity-10 dark:opacity-5">
+            <svg width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="dotted-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <circle cx="2" cy="2" r="2" fill="currentColor" class="text-primary" />
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#dotted-pattern)" />
+            </svg>
+        </div>
+
+        <div class="text-center max-w-2xl mx-auto mb-20 relative z-10">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-sm mb-4 uppercase tracking-widest backdrop-blur-sm">
+                Simple 3 Steps
+            </span>
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                Getting Started is <span class="text-primary">Easy</span>
+            </h2>
+            <p class="mt-6 text-lg text-gray-600 dark:text-gray-400">
+                We've streamlined our process to ensure your loved one receives personalized, compassionate care as quickly as possible.
+            </p>
+        </div>
+
+        <div class="relative z-10">
+            
+            <div class="absolute left-[39px] top-10 bottom-10 w-0.5 bg-gray-100 dark:bg-gray-800 lg:left-0 lg:right-0 lg:top-[56px] lg:bottom-auto lg:h-0.5 lg:w-full lg:bg-gradient-to-r lg:from-transparent lg:via-gray-100 dark:lg:via-gray-800 lg:to-transparent"></div>
+
+            <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-16">
+                
+                <div class="relative group flex items-start gap-8 lg:flex-col lg:items-center lg:gap-0">
+                    <div class="flex-shrink-0 w-20 h-20 rounded-full bg-white dark:bg-gray-900 border-4 border-gray-100 dark:border-gray-800 flex items-center justify-center relative z-20 group-hover:border-primary/50 group-hover:bg-primary/5 dark:group-hover:bg-primary/10 transition-all duration-300 transform group-hover:scale-110 shadow-lg">
+                        <span class="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg shadow-md">1</span>
+                        <i data-lucide="calendar-days" class="w-10 h-10 text-gray-400 group-hover:text-primary transition-colors"></i>
+                    </div>
+                    <div class="lg:text-center lg:mt-10 lg:px-6">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                            Book Consultation
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Schedule a free, no-obligation meeting with our care coordinators to discuss your unique needs and goals.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="relative group flex items-start gap-8 lg:flex-col lg:items-center lg:gap-0">
+                    <div class="flex-shrink-0 w-20 h-20 rounded-full bg-white dark:bg-gray-900 border-4 border-gray-100 dark:border-gray-800 flex items-center justify-center relative z-20 group-hover:border-primary/50 group-hover:bg-primary/5 dark:group-hover:bg-primary/10 transition-all duration-300 transform group-hover:scale-110 shadow-lg">
+                        <span class="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg shadow-md">2</span>
+                        <i data-lucide="clipboard-signature" class="w-10 h-10 text-gray-400 group-hover:text-primary transition-colors"></i>
+                    </div>
+                    <div class="lg:text-center lg:mt-10 lg:px-6">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                            Care Plan Created
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            We collaborate with you and healthcare professionals to design a personalized care plan tailored to maximize comfort and dignity.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="relative group flex items-start gap-8 lg:flex-col lg:items-center lg:gap-0">
+                    <div class="flex-shrink-0 w-20 h-20 rounded-full bg-white dark:bg-gray-900 border-4 border-gray-100 dark:border-gray-800 flex items-center justify-center relative z-20 group-hover:border-primary/50 group-hover:bg-primary/5 dark:group-hover:bg-primary/10 transition-all duration-300 transform group-hover:scale-110 shadow-lg">
+                        <span class="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg shadow-md">3</span>
+                        <i data-lucide="heart-handshake" class="w-10 h-10 text-gray-400 group-hover:text-primary transition-colors"></i>
+                    </div>
+                    <div class="lg:text-center lg:mt-10 lg:px-6">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                            Service Starts
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            We assign a compatible, certified caregiver and officially begin providing compassionate support in the comfort of home.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-24">
+                <a href="booknow.html" class="inline-flex items-center gap-3 bg-primary text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-teal-700 transition-all shadow-xl shadow-teal-200/50 dark:shadow-none group">
+                    Schedule Your Free Consultation Now
+                    <i data-lucide="arrow-right" class="w-6 h-6 group-hover:translate-x-1.5 transition-transform"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+<section class="py-16 md:py-24 bg-slate-50 dark:bg-gray-900 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
+                Why Families <span class="text-primary">Choose Us</span>
+            </h2>
+            <div class="w-20 h-1.5 bg-primary mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
+            
+            <div class="group relative p-6 md:p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 hover:border-primary/50">
+                <div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-t-3xl"></div>
+                <div class="mb-6 w-14 h-14 bg-teal-50 dark:bg-teal-900/20 text-primary rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                    <i data-lucide="medal" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Experienced & Trained</h3>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    Our caregivers undergo rigorous training and background checks to provide the highest level of professional expertise.
+                </p>
+            </div>
+
+            <div class="group relative p-6 md:p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 hover:border-primary/50">
+                <div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-t-3xl"></div>
+                <div class="mb-6 w-14 h-14 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                    <i data-lucide="settings-2" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Personalized Plans</h3>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    No two families are the same. We create custom care roadmaps tailored specifically to your medical needs.
+                </p>
+            </div>
+
+            <div class="group relative p-6 md:p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 hover:border-primary/50">
+                <div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-t-3xl"></div>
+                <div class="mb-6 w-14 h-14 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                    <i data-lucide="banknote" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Affordable Pricing</h3>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    Premium care shouldn't be out of reach. We offer competitive, transparent pricing with no hidden fees.
+                </p>
+            </div>
+
+            <div class="group relative p-6 md:p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 hover:border-primary/50">
+                <div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-t-3xl"></div>
+                <div class="mb-6 w-14 h-14 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                    <i data-lucide="calendar-range" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Flexible Scheduling</h3>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    Whether you need a few hours a week or 24/7 support, we adapt our schedule to fit your routine.
+                </p>
+            </div>
+
+            <div class="group relative p-6 md:p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 hover:border-primary/50 md:col-span-2 lg:col-span-2">
+                <div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-t-3xl"></div>
+                <div class="flex flex-col sm:flex-row md:items-center gap-6">
+                    <div class="flex-shrink-0 w-14 h-14 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                        <i data-lucide="message-square-quote" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Real-Time Family Updates</h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Stay connected with daily logs, photo updates, and direct communication lines with your caregiver for total peace of mind.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<section class="py-20 bg-primary dark:bg-teal-900/20 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+        <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white"></path>
+        </svg>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center text-white">
+            
+            <div class="group flex flex-col items-center p-6 transition-all duration-300 transform hover:scale-110"
+                 x-data="{ count: 0, target: 500 }"
+                 x-init="let timer = setInterval(() => { if (count < target) count += 5; else clearInterval(timer); }, 20)">
+                
+                <div class="mb-4 p-4 bg-white/20 rounded-2xl backdrop-blur-md group-hover:bg-white group-hover:text-primary transition-colors duration-500">
+                    <i data-lucide="users-2" class="w-10 h-10"></i>
+                </div>
+                
+                <div class="text-5xl font-black mb-2 tracking-tight">
+                    <span x-text="count">0</span>+
+                </div>
+                
+                <p class="text-teal-50 dark:text-teal-200 font-bold uppercase tracking-widest text-sm">
+                    Happy Families
+                </p>
+            </div>
+
+            <div class="group flex flex-col items-center p-6 transition-all duration-300 transform hover:scale-110"
+                 x-data="{ count: 0, target: 1000 }"
+                 x-init="let timer = setInterval(() => { if (count < target) count += 10; else clearInterval(timer); }, 15)">
+                
+                <div class="mb-4 p-4 bg-white/20 rounded-2xl backdrop-blur-md group-hover:bg-white group-hover:text-primary transition-colors duration-500">
+                    <i data-lucide="clock-9" class="w-10 h-10"></i>
+                </div>
+                
+                <div class="text-5xl font-black mb-2 tracking-tight">
+                    <span x-text="count">0</span>+
+                </div>
+                
+                <p class="text-teal-50 dark:text-teal-200 font-bold uppercase tracking-widest text-sm">
+                    Care Hours Delivered
+                </p>
+            </div>
+
+            <div class="group flex flex-col items-center p-6 transition-all duration-300 transform hover:scale-110"
+                 x-data="{ count: 0, target: 50 }"
+                 x-init="let timer = setInterval(() => { if (count < target) count += 1; else clearInterval(timer); }, 40)">
+                
+                <div class="mb-4 p-4 bg-white/20 rounded-2xl backdrop-blur-md group-hover:bg-white group-hover:text-primary transition-colors duration-500">
+                    <i data-lucide="user-check" class="w-10 h-10"></i>
+                </div>
+                
+                <div class="text-5xl font-black mb-2 tracking-tight">
+                    <span x-text="count">0</span>+
+                </div>
+                
+                <p class="text-teal-50 dark:text-teal-200 font-bold uppercase tracking-widest text-sm">
+                    Professional Caregivers
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+<section class="py-24 bg-white dark:bg-gray-950 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row items-center gap-16">
+            
+            <div class="w-full lg:w-1/2 relative group">
+                <div class="absolute -inset-4 bg-primary/10 rounded-3xl transform rotate-3 group-hover:rotate-0 transition-transform duration-500"></div>
+                <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+                    <img src="assets/familysupport" 
+                         alt="Family Support" 
+                         class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    
+                    <div class="absolute bottom-6 right-6 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce-slow">
+                        <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center">
+                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-tighter">Current Status</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">Caregiver On-Site</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2">
+                <div class="mb-10">
+                    <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
+                        Support for the <span class="text-primary">Whole Family</span>
+                    </h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                        We don't just care for our clients; we support their families too. Our platform keeps you connected and confident in your loved one's well-being.
+                    </p>
+                </div>
+
+                <div class="space-y-6">
+                    
+                    <div class="group p-6 bg-slate-50 dark:bg-gray-800/50 rounded-2xl border-l-4 border-transparent hover:border-primary hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow-md">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 p-3 bg-teal-100 dark:bg-teal-900/30 text-primary rounded-xl group-hover:scale-110 transition-transform">
+                                <i data-lucide="shield-check" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Total Peace of Mind</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Rest easy knowing your loved one is in the hands of a certified professional who genuinely cares.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group p-6 bg-slate-50 dark:bg-gray-800/50 rounded-2xl border-l-4 border-transparent hover:border-primary hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow-md">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl group-hover:scale-110 transition-transform">
+                                <i data-lucide="bell-ring" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Real-Time Regular Updates</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Receive daily digital logs, photo updates, and activity reports through our dedicated family portal.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group p-6 bg-slate-50 dark:bg-gray-800/50 rounded-2xl border-l-4 border-transparent hover:border-red-500 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow-md">
+                        <div class="flex items-start gap-4">
+                            <div class="relative flex-shrink-0 p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl group-hover:scale-110 transition-transform">
+                                <i data-lucide="phone-forwarded" class="w-6 h-6"></i>
+                                <span class="absolute top-0 right-0 flex h-3 w-3">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                </span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Instant Emergency Response</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Our 24/7 emergency protocols ensure immediate action and family notification during critical moments.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    @keyframes bounce-slow {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    .animate-bounce-slow {
+        animation: bounce-slow 3s infinite ease-in-out;
+    }
+</style>
+<section class="py-24 bg-slate-50 dark:bg-gray-950 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
+            
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+
+            <div class="flex flex-col lg:flex-row items-stretch">
+                
+                <div class="lg:w-5/12 bg-primary p-10 lg:p-16 text-white flex flex-col justify-center relative">
+                    <div class="relative z-10">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to provide the best care?</h2>
+                        <p class="text-teal-50 text-lg mb-8 leading-relaxed">
+                            Take the first step towards peace of mind. Our care coordinators are standing by to create a custom plan for your family.
+                        </p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                                    <i data-lucide="check" class="w-6 h-6"></i>
+                                </div>
+                                <span class="font-medium">Free Initial Assessment</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                                    <i data-lucide="check" class="w-6 h-6"></i>
+                                </div>
+                                <span class="font-medium">No Long-Term Contracts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:w-7/12 p-8 lg:p-16 relative" x-data="{ sent: false }">
+                    <div x-show="!sent" x-transition>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+                            <i data-lucide="calendar-check-2" class="text-primary"></i>
+                            Schedule Care Now
+                        </h3>
+
+                        <form @submit.prevent="sent = true" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Full Name</label>
+                                <input type="text" required placeholder="enter your name"
+                                    class="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all dark:text-white placeholder:text-gray-400">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Phone Number</label>
+                                <input type="tel" required placeholder="+91 00000 00000"
+                                    class="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all dark:text-white placeholder:text-gray-400">
+                            </div>
+
+                            <div class="md:col-span-2 space-y-2">
+                                <label class="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Service Needed</label>
+                                <select required 
+                                    class="w-full px-5 py-4 rounded-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all dark:text-white appearance-none cursor-pointer">
+                                    <option value="" disabled selected>Select a Service</option>
+                                    <option>Personal Care Assistance</option>
+                                    <option>Companionship Services</option>
+                                    <option>Medication Reminders</option>
+                                    <option>Meal Preparation</option>
+                                    <option>Post-Hospital Care</option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-2 mt-4">
+                                <button type="submit" 
+                                    class="w-full bg-primary text-white py-5 rounded-2xl font-bold text-lg hover:bg-teal-700 transition-all shadow-xl shadow-teal-200/50 dark:shadow-none flex items-center justify-center gap-3 group">
+                                    Schedule Care Now
+                                    <i data-lucide="heart-handshake" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+                                </button>
+                                <p class="text-center text-xs text-gray-400 mt-4 italic">
+                                    * We usually respond within 30 minutes.
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div x-show="sent" x-cloak x-transition class="h-full flex flex-col items-center justify-center text-center py-10">
+                        <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                            <i data-lucide="check-circle" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Request Received!</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-8">Thank you, Srinivas. Our team will call you shortly.</p>
+                        <button @click="sent = false" class="text-primary font-bold hover:underline">Send another request</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<section class="py-16 md:py-24 bg-slate-50 dark:bg-gray-950 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-2xl mx-auto mb-12 md:mb-16 relative">
+            <div class="absolute -top-8 -left-8 md:-top-12 md:-left-12 text-primary opacity-20 dark:opacity-10">
+                <i data-lucide="quote" class="w-16 h-16 md:w-24 md:h-24 rotate-180"></i>
+            </div>
+            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-sm mb-4 uppercase tracking-widest backdrop-blur-sm">
+                Real Stories
+            </span>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                Trusted by <span class="text-primary">Families</span> Like Yours
+            </h2>
+            <p class="mt-4 md:mt-6 text-base md:text-lg text-gray-600 dark:text-gray-400">
+                Hear directly from our clients and their families about the life-changing impact our compassionate caregivers have made.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
+            
+            <div class="group relative p-6 md:p-8 bg-white dark:bg-gray-900 rounded-[2rem] shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-800 hover:border-primary/50 flex flex-col justify-between">
+                <div class="absolute top-6 right-6 md:top-8 md:right-8 text-gray-100 dark:text-gray-800 group-hover:text-primary/10 transition-colors">
+                    <i data-lucide="quote" class="w-10 h-10 md:w-12 md:h-12"></i>
+                </div>
+                
+                <div class="relative z-10 flex-grow">
+                    <div class="flex gap-1 text-amber-400 mb-4 md:mb-6 transition-transform group-hover:scale-105">
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                    </div>
+                    
+                    <p class="text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed italic mb-6 md:mb-8">
+                        "Choosing ElderCare was the best decision for my mother. Her caregiver, Priya, is an absolute angel. My mom is happier, safer, and regaining her independence."
+                    </p>
+                </div>
+
+                <div class="relative z-10 flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-gray-800 group-hover:border-primary/20 transition-colors">
+                    <div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 md:border-4 border-gray-100 dark:border-gray-800 group-hover:border-primary/50 transition-colors">
+                        <img src="assets/t1" 
+                             alt="David R." 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h4 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white">David R.</h4>
+                        <p class="text-primary font-medium text-sm">Chennai, TN</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative p-6 md:p-8 bg-white dark:bg-gray-900 rounded-[2rem] shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-800 hover:border-primary/50 flex flex-col justify-between">
+                <div class="absolute top-6 right-6 md:top-8 md:right-8 text-gray-100 dark:text-gray-800 group-hover:text-primary/10 transition-colors">
+                    <i data-lucide="quote" class="w-10 h-10 md:w-12 md:h-12"></i>
+                </div>
+                
+                <div class="relative z-10 flex-grow">
+                    <div class="flex gap-1 text-amber-400 mb-4 md:mb-6 transition-transform group-hover:scale-105">
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                    </div>
+                    
+                    <p class="text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed italic mb-6 md:mb-8">
+                        "The peace of mind I have now is priceless. We receive photo updates and daily logs, which means I never have to worry about how my father is doing."
+                    </p>
+                </div>
+
+                <div class="relative z-10 flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-gray-800 group-hover:border-primary/20 transition-colors">
+                    <div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 md:border-4 border-gray-100 dark:border-gray-800 group-hover:border-primary/50 transition-colors">
+                        <img src="assets/t2" 
+                             alt="John" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h4 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white">John</h4>
+                        <p class="text-primary font-medium text-sm">Bangalore, KA</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative p-6 md:p-8 bg-white dark:bg-gray-900 rounded-[2rem] shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-800 hover:border-primary/50 flex flex-col justify-between md:col-span-2 lg:col-span-1">
+                <div class="absolute top-6 right-6 md:top-8 md:right-8 text-gray-100 dark:text-gray-800 group-hover:text-primary/10 transition-colors">
+                    <i data-lucide="quote" class="w-10 h-10 md:w-12 md:h-12"></i>
+                </div>
+                
+                <div class="relative z-10 flex-grow">
+                    <div class="flex gap-1 text-amber-400 mb-4 md:mb-6 transition-transform group-hover:scale-105">
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                    </div>
+                    
+                    <p class="text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed italic mb-6 md:mb-8">
+                        "Flexible scheduling has been a lifesaver. We needed extra care during a recovery period, and ElderCare adapted immediately without any hassle."
+                    </p>
+                </div>
+
+                <div class="relative z-10 flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-gray-800 group-hover:border-primary/20 transition-colors">
+                    <div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 md:border-4 border-gray-100 dark:border-gray-800 group-hover:border-primary/50 transition-colors">
+                        <img src="assets/t3" 
+                             alt="Meera S." 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h4 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Meera S.</h4>
+                        <p class="text-primary font-medium text-sm">Hyderabad, TS</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<section class="py-20 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative overflow-hidden bg-primary rounded-[2.5rem] p-8 md:p-16 lg:p-20 shadow-2xl shadow-teal-200 dark:shadow-none">
+            
+            <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-teal-300/20 rounded-full blur-3xl"></div>
+
+            <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+                
+                <div class="text-center lg:text-left lg:max-w-2xl">
+                    <h2 class="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
+                        Give Your Loved Ones the <span class="text-teal-200">Care They Deserve.</span>
+                    </h2>
+                    <p class="text-teal-50 text-lg md:text-xl opacity-90 leading-relaxed">
+                        Join over 500+ families who trust ElderCare for professional, compassionate, and reliable in-home support. Start your journey today.
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                    <a href="booknow.html" class="relative group w-full sm:w-auto">
+                        <div class="absolute -inset-1 bg-white/40 rounded-full blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                        <button class="relative w-full sm:w-auto bg-white text-primary px-10 py-5 rounded-full font-bold text-lg hover:bg-teal-50 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2">
+                            Book Free Consultation
+                            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </a>
+
+                    <a href="contact.html" class="w-full sm:w-auto">
+                        <button class="w-full sm:w-auto border-2 border-white/30 text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="phone" class="w-5 h-5"></i>
+                            Talk to an Expert
+                        </button>
+                    </a>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-12 mt-16 pt-8 border-t border-white/10">
+                <div class="flex items-center gap-3 text-white/80">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-teal-200"></i>
+                    <span class="font-medium">Fully Insured & Bonded</span>
+                </div>
+                <div class="flex items-center gap-3 text-white/80">
+                    <i data-lucide="clock" class="w-6 h-6 text-teal-200"></i>
+                    <span class="font-medium">Available 24/7/365</span>
+                </div>
+                <div class="flex items-center gap-3 text-white/80">
+                    <i data-lucide="badge-check" class="w-6 h-6 text-teal-200"></i>
+                    <span class="font-medium">Certified Caregivers</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center">
+            <p class="text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2 flex-wrap">
+                <i data-lucide="help-circle" class="w-5 h-5"></i>
+                Have specific questions? 
+                <a href="faq.html" class="text-primary font-bold hover:underline">Visit our FAQ</a> 
+                or call us directly at 
+                <span class="text-gray-900 dark:text-white font-bold">1-800-ELDER</span>
+            </p>
+        </div>
+    </div>
+</section>
+   
+ <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+            
+            <div class="space-y-6">
+                <a href="index.html" class="inline-block">
+                    <div class="flex items-center gap-2 text-primary">
+                        <div class="bg-primary p-1.5 rounded text-white flex items-center justify-center">
+                            <i data-lucide="heart" class="w-5 h-5"></i>
+                        </div>
+                        <span class="text-xl font-bold">ElderCare</span>
+                    </div>
+                </a>
+
+                <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
+                    Making senior living better every day with professional medical and companion support. We prioritize dignity, safety, and comfort.
+                </p>
+
+                <div class="flex space-x-3">
+                    <a href="https://facebook.com" target="_blank" class="group p-2.5 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-primary transition-all flex items-center justify-center border border-transparent">
+                        <i data-lucide="facebook" class="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-white"></i>
+                    </a>
+                    <a href="https://twitter.com" target="_blank" class="group p-2.5 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-primary transition-all flex items-center justify-center border border-transparent">
+                        <i data-lucide="twitter" class="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-white"></i>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" class="group p-2.5 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-primary transition-all flex items-center justify-center border border-transparent">
+                        <i data-lucide="instagram" class="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-white"></i>
+                    </a>
+                    <a href="https://linkedin.com" target="_blank" class="group p-2.5 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-primary transition-all flex items-center justify-center border border-transparent">
+                        <i data-lucide="linkedin" class="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-white"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-bold mb-6 text-gray-900 dark:text-white">Quick Links</h4>
+                <ul class="space-y-4 text-gray-600 dark:text-gray-400">
+                    <li><a href="index.html" class="hover:text-primary transition-colors">Home</a></li>
+                    <li><a href="home2.html" class="hover:text-primary transition-colors">Home2</a></li>
+                    <li><a href="about.html" class="hover:text-primary transition-colors">About Us</a></li>
+                    <li><a href="service.html" class="hover:text-primary transition-colors">Services</a></li>
+                    <li><a href="404.html" class="hover:text-primary transition-colors">404</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-bold mb-6 text-gray-900 dark:text-white">Support</h4>
+                <ul class="space-y-4 text-gray-600 dark:text-gray-400">
+                    <li><a href="contact.html" class="hover:text-primary transition-colors">Contact</a></li>
+                    <li><a href="booknow.html" class="hover:text-primary font-bold transition-colors">Book Now</a></li>
+                    <li><a href="gallery.html" class="hover:text-primary transition-colors">Gallery</a></li>
+                    <li><a href="#" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+                    <li><a href="comingsoon.html" class="hover:text-primary transition-colors">ComingSoon</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-bold mb-6 text-gray-900 dark:text-white">Newsletter</h4>
+                <form class="space-y-3" onsubmit="event.preventDefault(); alert('Subscribed!');">
+                    <input type="email" required placeholder="Email Address" 
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-primary outline-none transition-all dark:text-white">
+                    <button type="submit" class="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-teal-700 shadow-md">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+            <p>© 2026 ElderCare Services.</p>
+            <div class="flex items-center gap-6">
+                <span class="flex items-center gap-1"><i data-lucide="globe" class="w-4 h-4"></i> English</span>
+                <span class="flex items-center gap-1 font-medium text-primary"><i data-lucide="phone" class="w-4 h-4 text-primary"></i> 1-800-ELDER</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* Force size on the SVGs Lucide creates */
+    svg.lucide {
+        display: inline-block !important;
+        width: 1.25rem !important; /* 20px */
+        height: 1.25rem !important; /* 20px */
+        stroke-width: 2;
+        stroke: currentColor;
+        fill: none;
+    }
+    /* Special sizing for bottom bar icons */
+    .text-sm svg.lucide {
+        width: 1rem !important;
+        height: 1rem !important;
+    }
+</style>
+
+<script 
+    src="https://cdn.jsdelivr.net/npm/lucide@0.363.0/dist/umd/lucide.min.js" 
+    onload="lucide.createIcons();"
+></script>
+
+<script>
+    // Backup: In case the 'onload' above fires too early
+    window.addEventListener('load', () => {
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
+</script>   
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    // Initialize icons on load
+    document.addEventListener("DOMContentLoaded", () => {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    });
+</script>
+
+    <script>
+        function appState() {
+            return {
+                darkMode: localStorage.getItem('darkMode') === 'true',
+                isRtl: localStorage.getItem('isRtl') === 'true',
+                
+                toggleDarkMode() {
+                    this.darkMode = !this.darkMode;
+                    localStorage.setItem('darkMode', this.darkMode);
+                },
+                
+                toggleRtl() {
+                    this.isRtl = !this.isRtl;
+                    localStorage.setItem('isRtl', this.isRtl);
+                },
+
+                init() {
+                    lucide.createIcons();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

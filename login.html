@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" x-data="authApp()" :class="{ 'dark': darkMode }" :dir="isRtl ? 'rtl' : 'ltr'">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23008080' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z'/></svg>">
+    <title>Login | ElderCare Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0D9488',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
+
+    <nav class="p-6 flex justify-between items-center w-full max-w-7xl mx-auto">
+        <a href="index.html" class="flex items-center gap-2 group">
+            <div class="bg-primary p-1.5 rounded-lg text-white group-hover:scale-110 transition-transform">
+                <i data-lucide="heart" class="w-6 h-6"></i>
+            </div>
+            <span class="text-2xl font-bold text-primary">ElderCare</span>
+        </a>
+
+        <div class="flex items-center gap-4">
+            <button @click="toggleRtl()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 text-xs font-bold hover:border-primary transition-colors" x-text="isRtl ? 'LTR' : 'RTL'"></button>
+            
+            <button @click="toggleDarkMode()" class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 hover:border-primary transition-colors">
+                <i x-show="!darkMode" data-lucide="moon" class="w-5 h-5"></i>
+                <i x-show="darkMode" data-lucide="sun" class="w-5 h-5 text-amber-400"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-2xl p-8 md:p-12 border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+            
+            <div class="mb-10 text-center lg:text-start">
+                <h1 class="text-3xl text-center font-black mb-2">Welcome Back</h1>
+                <!-- <p class="text-gray-500 dark:text-gray-400">Please enter your details to sign in.</p> -->
+            </div>
+
+            <form action="index.html" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-sm font-bold ml-1">Full Name or Email</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                        <input type="text" required placeholder="Srinivas K A"
+                            class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-primary outline-none transition-all dark:text-white">
+                    </div>
+                </div>
+
+                <div class="space-y-2" x-data="{ show: false }">
+                    <label class="text-sm font-bold ml-1">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                        <input :type="show ? 'text' : 'password'" required placeholder="••••••••"
+                            class="w-full pl-12 pr-12 py-4 rounded-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-primary outline-none transition-all dark:text-white">
+                        <button type="button" @click="show = !show" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors">
+                            <i x-show="!show" data-lucide="eye" class="w-5 h-5"></i>
+                            <i x-show="show" data-lucide="eye-off" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-sm px-1">
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="text-gray-600 dark:text-gray-400 group-hover:text-primary transition-colors">Remember me</span>
+                    </label>
+                    <a href="#" class="text-primary font-bold hover:underline">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg hover:bg-teal-700 shadow-xl shadow-teal-200/50 dark:shadow-none active:scale-[0.98] transition-all">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="relative my-8 text-center">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200 dark:border-gray-800"></div></div>
+                <span class="relative bg-white dark:bg-gray-900 px-4 text-xs text-gray-400 uppercase tracking-widest font-bold">Or continue with</span>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary transition-all">
+                    <i data-lucide="facebook" class="w-6 h-6 text-[#1877F2]"></i>
+                </button>
+                <button class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary transition-all">
+                    <i data-lucide="chrome" class="w-6 h-6 text-[#DB4437]"></i>
+                </button>
+                <button class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary transition-all">
+                    <i data-lucide="github" class="w-6 h-6 dark:text-white"></i>
+                </button>
+            </div>
+
+            <p class="mt-8 text-center text-gray-500">
+                Don't have an account? 
+                <a href="regesiter.html" class="text-primary font-bold hover:underline">Sign up for free</a>
+            </p>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.363.0/dist/umd/lucide.min.js" onload="lucide.createIcons();"></script>
+    <script>
+        function authApp() {
+            return {
+                darkMode: localStorage.getItem('darkMode') === 'true',
+                isRtl: localStorage.getItem('isRtl') === 'true',
+                
+                toggleDarkMode() {
+                    this.darkMode = !this.darkMode;
+                    localStorage.setItem('darkMode', this.darkMode);
+                },
+                
+                toggleRtl() {
+                    this.isRtl = !this.isRtl;
+                    localStorage.setItem('isRtl', this.isRtl);
+                },
+
+                init() {
+                    lucide.createIcons();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
